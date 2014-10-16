@@ -12,6 +12,31 @@ def trigger_crash():
     except PermissionError as err:
         print("Must be root to trigger a crash dump\t{}".format(err))
 
+def add_ref_conf():
+    try:
+        with open("/etc/default/kdump-tools.ref", "r") as f:
+            pass
+    except FileNotFoundError:
+        with open("/etc/default/kdump-tools", "r") as orig:
+            try:
+                ref = open("/etc/default/kdump-tools.ref","w")
+                for line in orig.readlines():
+                    ref.write(line)
+                ref.close()
+            except PermissionError as err:
+                print("Must be root to trigger a crash dump\t{}".format(err))
+        orig.close()
+    return
+
+def set_conffile(test):
+    if test == 'ssh':
+        pass
+    elif test == 'nfs':
+        pass
+    else:
+        raise TypeError("Invalid test")
+    return
+
 def run_test(test):
     f = open('/var/crash/next-test','w')
     if test == 'local':
