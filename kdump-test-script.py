@@ -5,12 +5,14 @@ _local_only = False
 
 test_phase = ['local', 'ssh', 'nfs']
 
+
 def trigger_crash():
     try:
-        f = open("/proc/sysrq-trigger","a")
+        f = open("/proc/sysrq-trigger", "a")
         f.write('c')
     except PermissionError as err:
         print("Must be root to trigger a crash dump\t{}".format(err))
+
 
 def add_ref_conf():
     try:
@@ -19,7 +21,7 @@ def add_ref_conf():
     except FileNotFoundError:
         with open("/etc/default/kdump-tools", "r") as orig:
             try:
-                ref = open("/etc/default/kdump-tools.ref","w")
+                ref = open("/etc/default/kdump-tools.ref", "w")
                 for line in orig.readlines():
                     ref.write(line)
                 ref.close()
@@ -27,6 +29,7 @@ def add_ref_conf():
                 print("Must be root to trigger a crash dump\t{}".format(err))
         orig.close()
     return
+
 
 def set_conffile(test):
     if test == 'ssh':
@@ -37,8 +40,9 @@ def set_conffile(test):
         raise TypeError("Invalid test")
     return
 
+
 def run_test(test):
-    f = open('/var/crash/next-test','w')
+    f = open('/var/crash/next-test', 'w')
     if test == 'local':
         f.write('ssh\n')
         f.close()
@@ -47,7 +51,7 @@ def run_test(test):
         f.write('nfs\n')
         f.close()
         os.sync()
-    elif test == 'nfs' or test == 'local-only' :
+    elif test == 'nfs' or test == 'local-only':
         f.write('completed\n')
         f.close()
         os.sync()
@@ -58,18 +62,16 @@ def run_test(test):
 
 if __name__ == '__main__':
 
-
     add_ref_conf()
 
-
     try:
-        f = open('/var/crash/next-test','r')
-        phase=f.read().strip()
+        f = open('/var/crash/next-test', 'r')
+        phase = f.read().strip()
     except FileNotFoundError:
-        if _local_only :
-            phase='local-only'
+        if _local_only:
+            phase = 'local-only'
         else:
-            phase='local'
+            phase = 'local'
     print("Phase : {}".format(phase))
     if phase != 'completed':
         run_test(phase)
