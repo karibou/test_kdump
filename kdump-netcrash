@@ -12,16 +12,21 @@ package_update: true
 # Default: false
 # Aliases: apt_upgrade
 package_upgrade: true
+hostname: kdump-netcrash
+manage_etc_hosts: true
+
+ssh_import_id: [louis-bouchard]
+
 
 packages:
- - linux-crashdump
+ - nfs-kernel-server
+
 
 runcmd:
- - [ sed, -i, 's/USE_KDUMP=0/USE_KDUMP=1/', /etc/default/kdump-tools ]
- - [ sed, -i, 's/crashkernel=384M-2G:64M/crashkernel=384M-2G:128M/', /etc/grub.d/10_linux ]
+ - echo "/var/crash *(rw,sync,no_root_squash)" >> /etc/exports
 
 power_state:
  delay: now
  mode: reboot
- message: Rebooting after crashdump setup
+ message: Rebooting after netcrash setup
 

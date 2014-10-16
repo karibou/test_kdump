@@ -1,3 +1,13 @@
 #!/bin/bash
 
-euca-run-instances -k lbouchard_${NOVA_REGION} -t m1.tiny ami-0000047a -f test_kdump
+release=trusty
+
+arch=amd64
+
+image=$(nova image-list | grep $release | grep daily | grep $arch)
+
+set -- $image
+
+image=$2
+
+nova boot --flavor 1 --image $image --key-name lbouchard_${NOVA_REGION} --user-data test_kdump test_kdump
