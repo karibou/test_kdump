@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 
+_local_only = False
 
 test_phase = ['local', 'ssh', 'nfs']
 
@@ -21,7 +22,7 @@ def run_test(test):
         f.write('nfs\n')
         f.close()
         os.sync()
-    elif test == 'nfs':
+    elif test == 'nfs' or test == 'local-only' :
         f.write('completed\n')
         f.close()
         os.sync()
@@ -32,11 +33,18 @@ def run_test(test):
 
 if __name__ == '__main__':
 
+
+    add_ref_conf()
+
+
     try:
         f = open('/var/crash/next-test','r')
         phase=f.read().strip()
     except FileNotFoundError:
-        phase='local'
+        if _local_only :
+            phase='local-only'
+        else:
+            phase='local'
     print("Phase : {}".format(phase))
     if phase != 'completed':
         run_test(phase)
