@@ -1,0 +1,33 @@
+#cloud-config
+# Update apt database on first boot
+# (ie run apt-get update)
+#
+# Default: true
+# Aliases: apt_update
+package_update: true
+
+# Upgrade the instance on first boot
+# (ie run apt-get upgrade)
+#
+# Default: false
+# Aliases: apt_upgrade
+package_upgrade: true
+hostname: test-kdump
+manage_etc_hosts: true
+
+ssh_import_id: [louis-bouchard]
+
+
+packages:
+ - linux-crashdump
+
+
+runcmd:
+ - [ sed, -i, 's/USE_KDUMP=0/USE_KDUMP=1/', /etc/default/kdump-tools ]
+ - [ sed, -i, 's/crashkernel=384M-2G:64M/crashkernel=384M-2G:128M/', /etc/grub.d/10_linux ]
+
+power_state:
+ delay: now
+ mode: reboot
+ message: Rebooting after crashdump setup
+
