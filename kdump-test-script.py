@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+import os
+
 
 test_phase = ['local', 'ssh', 'nfs']
 
@@ -14,12 +16,15 @@ def run_test(test):
     if test == 'local':
         f.write('ssh\n')
         f.close()
+        os.sync()
     elif test == 'ssh':
         f.write('nfs\n')
         f.close()
+        os.sync()
     elif test == 'nfs':
         f.write('completed\n')
         f.close()
+        os.sync()
     else:
         raise TypeError("Invalid test")
     trigger_crash()
