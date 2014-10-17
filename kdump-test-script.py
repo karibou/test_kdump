@@ -4,6 +4,7 @@ import sys
 from time import time, localtime
 
 test_phase = ['local-only', 'local', 'ssh', 'nfs']
+_EBAD = -1
 _crash_dir = '/var/crash'
 
 #
@@ -24,20 +25,16 @@ def trigger_crash():
         print("Would trigger a panic but crash_switch is False")
 
 
-def add_ref_conf():
+def create_ref_conf():
     try:
         with open("/etc/default/kdump-tools.ref", "r") as f:
             pass
     except FileNotFoundError:
-        with open("/etc/default/kdump-tools", "r") as orig:
-            try:
-                ref = open("/etc/default/kdump-tools.ref", "w")
-                for line in orig.readlines():
-                    ref.write(line)
-                ref.close()
-            except PermissionError as err:
-                print("Must be root to trigger a crash dump\t{}".format(err))
-        orig.close()
+        try:
+            os.rename("/etc/default/kdump-tools", "/etc/default/kdump-tools.ref")
+        except PermissionError as err:
+            print("User does not have the privilege to change this file\t{}".format(err))
+            return _EBAD
     return
 
 
@@ -100,7 +97,8 @@ if __name__ == '__main__':
     else:
         crash_switch = False
 
-    add_ref_conf()
+    if create_ref_conf() == _EBAD:
+        exit(_EBAD)
 
     try:
         f = open('/var/crash/next-test', 'r')
