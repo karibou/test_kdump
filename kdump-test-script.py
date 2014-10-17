@@ -33,9 +33,11 @@ def create_ref_conf():
             pass
     except FileNotFoundError:
         try:
-            os.rename("/etc/default/kdump-tools", "/etc/default/kdump-tools.ref")
+            os.rename(
+                "/etc/default/kdump-tools", "/etc/default/kdump-tools.ref")
         except PermissionError as err:
-            print("User does not have the privilege to change this file\t{}".format(err))
+            print(("User does not have the privilege "
+                   "to change this file\t{}").format(err))
             return _EBAD
     return
 
@@ -58,7 +60,8 @@ def set_conffile(test):
                             new_conf.write("{}".format(line))
                         new_conf.write("{}".format(_ssh_remote_server))
                 else:
-                    print("SSH functionality not found in {}".format('/etc/default/kdump-tools'))
+                    print("SSH functionality not found in {}".format(
+                        '/etc/default/kdump-tools'))
                     return _EBAD
             elif test == 'nfs':
                 ref = orig.read()
@@ -68,12 +71,14 @@ def set_conffile(test):
                             new_conf.write("{}".format(line))
                         new_conf.write("{}".format(_nfs_mountpoint))
                 else:
-                    print("NFS functionality not found in {}".format('/etc/default/kdump-tools'))
+                    print("NFS functionality not found in {}".format(
+                        '/etc/default/kdump-tools'))
                     return _EBAD
             else:
                 raise TypeError("Invalid test")
         except PermissionError as err:
-            print("User has not the required privilege to update the file\t{}".format(err))
+            print(("User does not have the privilege "
+                   "to change this file\t{}").format(err))
             return _EBAD
     return
 
