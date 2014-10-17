@@ -54,7 +54,7 @@ def set_conffile(test):
                             new_conf.write("{}".format(line))
             elif test == 'ssh':
                 ref = orig.read()
-                if ref.find("SSH") == 0:
+                if ref.find("SSH") != -1:
                     with open("/etc/default/kdump-tools", "w") as new_conf:
                         for line in orig.readlines():
                             new_conf.write("{}".format(line))
@@ -65,11 +65,11 @@ def set_conffile(test):
                     return _EBAD
             elif test == 'nfs':
                 ref = orig.read()
-                if ref.find("NFS") == 0:
+                if ref.find("NFS") != -1:
                     with open("/etc/default/kdump-tools", "w") as new_conf:
                         for line in orig.readlines():
                             new_conf.write("{}".format(line))
-                        new_conf.write("{}".format(_nfs_mountpoint))
+                        new_conf.write("{}".format(_nfs_remote_mountpoint))
                 else:
                     print("NFS functionality not found in {}".format(
                         '/etc/default/kdump-tools'))
