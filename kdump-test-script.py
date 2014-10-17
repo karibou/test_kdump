@@ -3,7 +3,11 @@ import os
 
 _local_only = False
 
-test_phase = ['local', 'ssh', 'nfs']
+#
+# Used to indicate that netdump tests
+# should not be run (SSH & NFS)
+#
+_local_only = False
 
 
 def trigger_crash():
