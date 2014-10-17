@@ -103,12 +103,13 @@ if __name__ == '__main__':
     try:
         f = open('/var/crash/next-test', 'r')
         phase = f.read().strip()
+        f.close()
     except FileNotFoundError:
         if _local_only:
             phase = 'local-only'
         else:
             phase = 'local'
-    print("Phase : {}".format(phase))
+    print("Running phase {}".format(phase.upper()))
     if phase != 'completed':
         run_test(phase)
     else:
