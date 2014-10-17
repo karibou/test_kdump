@@ -20,11 +20,15 @@ ssh_import_id: [louis-bouchard]
 
 packages:
  - linux-crashdump
+ - git
 
 
 runcmd:
  - [ sed, -i, 's/USE_KDUMP=0/USE_KDUMP=1/', /etc/default/kdump-tools ]
  - [ sed, -i, 's/crashkernel=384M-2G:64M/crashkernel=384M-2G:128M/', /etc/grub.d/10_linux ]
+ - [ git, clone, 'https://github.com/karibou/test_kdump.git' ]
+ - cp test_kdump/kdump-test-script.py /etc/init.d
+ - ln -s /etc/init.d/kdump-test-script.py /etc/rc2.d/S99kdump-test-script.py
 
 power_state:
  delay: now
