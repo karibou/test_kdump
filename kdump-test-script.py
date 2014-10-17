@@ -54,16 +54,15 @@ def set_conffile(test):
 def rename_crash(label):
     now = localtime(time())
     for path, dirs, files in os.walk(_crash_dir):
-        if len(dirs) != 0 and dirs[0].find(str(now.tm_year)) == 0 :
+        if len(dirs) != 0 and dirs[0].find(str(now.tm_year)) == 0:
             os.rename(
-            '{}/{}'.format(_crash_dir, dirs[0]),
-            '{}/{}_{}'.format(_crash_dir, label, dirs[0]))
+                '{}/{}'.format(_crash_dir, dirs[0]),
+                '{}/{}_{}'.format(_crash_dir, label, dirs[0]))
             for file in files:
                 if file.find(str('linux')) == 0:
                     os.rename(
                         '{}/{}'.format(_crash_dir, file),
                         '{}/{}_{}'.format(_crash_dir, label, file))
-
 
 
 def run_test(test):
@@ -86,6 +85,7 @@ def run_test(test):
         raise TypeError("Invalid test")
     trigger_crash()
     return
+
 
 def gather_test_results():
     print("Getting the results")
