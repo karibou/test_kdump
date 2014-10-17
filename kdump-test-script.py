@@ -7,11 +7,14 @@ test_phase = ['local', 'ssh', 'nfs']
 
 
 def trigger_crash():
-    try:
-        f = open("/proc/sysrq-trigger", "a")
-        f.write('c')
-    except PermissionError as err:
-        print("Must be root to trigger a crash dump\t{}".format(err))
+    if crash_switch:
+        try:
+            f = open("/proc/sysrq-trigger", "a")
+            f.write('c')
+        except PermissionError as err:
+            print("Must be root to trigger a crash dump\t{}".format(err))
+    else:
+        print("Would trigger a panic but crash_switch is False")
 
 
 def add_ref_conf():
@@ -61,6 +64,12 @@ def run_test(test):
     return
 
 if __name__ == '__main__':
+
+    if len(sys.argv) > 1:
+        crash_switch = True
+        pass
+    else:
+        crash_switch = False
 
     add_ref_conf()
 
