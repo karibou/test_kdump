@@ -87,6 +87,11 @@ def run_test(test):
     trigger_crash()
     return
 
+def gather_test_results():
+    print("Getting the results")
+    pass
+
+
 if __name__ == '__main__':
 
     if len(sys.argv) > 1:
@@ -108,5 +113,8 @@ if __name__ == '__main__':
     print("Phase : {}".format(phase))
     if phase != 'completed':
         run_test(phase)
+    else:
+        os.unlink('/var/crash/next-test')
 
+    gather_test_results()
 # vim: et ts=4 sw=4
