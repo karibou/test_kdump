@@ -96,20 +96,6 @@ def set_conffile(test):
     return
 
 
-def rename_crash(label):
-    now = localtime(time())
-    for path, dirs, files in os.walk(_crash_dir):
-        if len(dirs) != 0 and dirs[0].find(str(now.tm_year)) == 0:
-            os.rename(
-                '{}/{}'.format(_crash_dir, dirs[0]),
-                '{}/{}_{}'.format(_crash_dir, label, dirs[0]))
-            for file in files:
-                if file.find(str('linux')) == 0:
-                    os.rename(
-                        '{}/{}'.format(_crash_dir, file),
-                        '{}/{}_{}'.format(_crash_dir, label, file))
-
-
 def run_test(test):
     f = open('/var/crash/next-test', 'w')
     if test == 'local':
@@ -117,12 +103,10 @@ def run_test(test):
         f.close()
         os.sync()
     elif test == 'ssh':
-        rename_crash('local')
         f.write('nfs\n')
         f.close()
         os.sync()
     elif test == 'nfs' or test == 'local-only':
-        rename_crash('nfs')
         f.write('completed\n')
         f.close()
         os.sync()
