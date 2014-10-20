@@ -34,7 +34,6 @@ packages:
  - linux-crashdump
  - git
 
-
 runcmd:
  - [ sed, -i, 's/USE_KDUMP=0/USE_KDUMP=1/', /etc/default/kdump-tools ]
  - [ sed, -i, 's/crashkernel=384M-2G:64M/crashkernel=384M-2G:128M/', /etc/grub.d/10_linux ]
@@ -47,4 +46,3 @@ power_state:
  delay: now
  mode: reboot
  message: Rebooting after crashdump setup
-
