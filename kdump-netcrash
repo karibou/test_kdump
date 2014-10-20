@@ -14,6 +14,7 @@
 #package_upgrade: true
 hostname: kdump-netcrash
 manage_etc_hosts: true
+apt_proxy: http://192.168.122.1:8000
 
 ssh_import_id: [louis-bouchard]
 
