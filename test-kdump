@@ -30,6 +30,7 @@ write_files:
 
 
 packages:
+ - nfs-kernel-server
  - linux-crashdump
  - git
 
