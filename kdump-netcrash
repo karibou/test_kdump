@@ -18,6 +18,8 @@ apt_proxy: http://192.168.122.1:8000
 
 ssh_import_id: [louis-bouchard]
 
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCeg2+JBm29O9pu37fhDbIPufKfzalRxrVZ0b2nK3tgW4ndiApiz6ybLW06fcsUgVNzM2uSgmY66vFEPTl9LClOGAc3bDtqk6F+6/L7lJAtsawSqcyTjCwCuVBFpxNGW93P8czbjJUvEHJz6pRSxkObktaNPeK2PQKRiXHDiPakWBftg9oUn3WTOPBibG14OAtGGmq+D6T9yl04bsQ3/lJd/rcP1b7MEeLe4a3s9gS2iYMC7/XxPmcSLjZ0pUQF/0Q1P++oxVhdL4L+2xxUbofb8jBXtIw+1eper9AWU8TcWNBZUo1c2KOP9PDXRrgo+ZSPmnomGV4GwpUaNFLkU5Kn caribou@marvin
 
 packages:
  - nfs-kernel-server
