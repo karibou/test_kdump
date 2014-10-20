@@ -4,14 +4,14 @@
 #
 # Default: true
 # Aliases: apt_update
-package_update: true
+#package_update: true
 
 # Upgrade the instance on first boot
 # (ie run apt-get upgrade)
 #
 # Default: false
 # Aliases: apt_upgrade
-package_upgrade: true
+#package_upgrade: true
 hostname: kdump-netcrash
 manage_etc_hosts: true
 
