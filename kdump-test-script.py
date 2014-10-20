@@ -78,6 +78,11 @@ def set_conffile(test):
                             else:
                                 new_conf.write("{}".format(line))
                         new_conf.write('NFS="{}"\n'.format(_nfs_remote_mountpoint))
+                        #
+                        # Adding HOSTTAG to test the functionality
+                        # And avoid name collision b/w SSH and NFS
+                        #
+                        new_conf.write('HOSTTAG="hostname"\n')
                 else:
                     print("NFS functionality not found in {}".format(
                         '/etc/default/kdump-tools'))
