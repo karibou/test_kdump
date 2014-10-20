@@ -117,7 +117,7 @@ def run_test(test):
         f.close()
         os.sync()
     elif test == 'ssh':
-        rename_crash('ssh')
+        rename_crash('local')
         f.write('nfs\n')
         f.close()
         os.sync()
