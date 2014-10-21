@@ -11,6 +11,7 @@ _next_phase = '{}/next-test'.format(_crash_dir)
 _remote_server = 'kdump-netcrash'
 _ssh_remote_server = 'ubuntu@{}'.format(_remote_server)
 _nfs_remote_mp = '{}:/var/crash'.format(_remote_server)
+_conffile = "/etc/default/kdump-tools"
 
 #
 # Used to indicate that netdump tests
@@ -52,10 +53,10 @@ class Phase(object):
         os.unlink('{}'.format(_next_phase))
 
     def set_conffile(self):
-        with open("/etc/default/kdump-tools.ref", "r") as orig:
+        with open("{}.ref".format(_conffile), "r") as orig:
             try:
                 if self.phase == 'local' or self.phase == 'local-only':
-                    with open("/etc/default/kdump-tools", "w") as new_conf:
+                    with open("{}".format(_conffile), "w") as new_conf:
                         for line in orig.readlines():
                             if line.find('USE_KDUMP') == 0:
                                 new_conf.write("{}".format('USE_KDUMP=1\n'))
@@ -65,7 +66,7 @@ class Phase(object):
                     ref = orig.read()
                     orig.seek(0)
                     if ref.find("SSH") != -1:
-                        with open("/etc/default/kdump-tools", "w") as new_conf:
+                        with open("{}".format(_conffile), "w") as new_conf:
                             for line in orig.readlines():
                                 if line.find('USE_KDUMP') == 0:
                                     new_conf.write(
@@ -76,13 +77,13 @@ class Phase(object):
                                 'SSH="{}"\n'.format(_ssh_remote_server))
                     else:
                         print("SSH functionality not found in {}".format(
-                            '/etc/default/kdump-tools'))
+                            '{}'.format(_conffile)))
                         return _EBAD
                 elif self.phase == 'nfs':
                     ref = orig.read()
                     orig.seek(0)
                     if ref.find("NFS") != -1:
-                        with open("/etc/default/kdump-tools", "w") as new_conf:
+                        with open("{}".format(_conffile), "w") as new_conf:
                             for line in orig.readlines():
                                 if line.find('USE_KDUMP') == 0:
                                     new_conf.write(
@@ -97,7 +98,7 @@ class Phase(object):
                             new_conf.write('HOSTTAG="hostname"\n')
                     else:
                         print("NFS functionality not found in {}".format(
-                            '/etc/default/kdump-tools'))
+                            '{}'.format(_conffile)))
                         return _EBAD
                 else:
                     raise TypeError("Invalid test")
@@ -121,12 +122,12 @@ def trigger_crash():
 
 def create_ref_conf():
     try:
-        with open("/etc/default/kdump-tools.ref", "r") as f:
+        with open("{}.ref".format(_conffile), "r") as f:
             pass
     except FileNotFoundError:
         try:
             os.rename(
-                "/etc/default/kdump-tools", "/etc/default/kdump-tools.ref")
+                "{}".format(_conffile), "{}.ref".format(_conffile))
         except PermissionError as err:
             print(("User does not have the privilege "
                    "to change this file\t{}").format(err))
