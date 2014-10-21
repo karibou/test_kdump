@@ -8,8 +8,9 @@ from time import time, localtime, sleep
 _EBAD = -1
 _crash_dir = '/var/crash'
 _next_phase = '{}/next-test'.format(_crash_dir)
-_ssh_remote_server = 'ubuntu@kdump-netcrash'
-_nfs_remote_mp = 'kdump-netcrash:/var/crash'
+_remote_server = 'kdump-netcrash'
+_ssh_remote_server = 'ubuntu@{}'.format(_remote_server)
+_nfs_remote_mp = '{}:/var/crash'.format(_remote_server)
 
 #
 # Used to indicate that netdump tests
