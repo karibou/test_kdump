@@ -7,7 +7,7 @@ test_phase = ['local-only', 'local', 'ssh', 'nfs']
 _EBAD = -1
 _crash_dir = '/var/crash'
 _ssh_remote_server = 'ubuntu@kdump-netcrash'
-_nfs_remote_mountpoint = 'kdump-netcrash:/var/crash'
+_nfs_remote_mp = 'kdump-netcrash:/var/crash'
 
 #
 # Used to indicate that netdump tests
@@ -77,7 +77,7 @@ def set_conffile(test):
                                 new_conf.write("{}".format('USE_KDUMP=1\n'))
                             else:
                                 new_conf.write("{}".format(line))
-                        new_conf.write('NFS="{}"\n'.format(_nfs_remote_mountpoint))
+                        new_conf.write('NFS="{}"\n'.format(_nfs_remote_mp))
                         #
                         # Adding HOSTTAG to test the functionality
                         # And avoid name collision b/w SSH and NFS
