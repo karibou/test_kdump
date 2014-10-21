@@ -18,6 +18,40 @@ _nfs_remote_mp = 'kdump-netcrash:/var/crash'
 _local_only = False
 
 
+class Phase(object):
+    """The phase of the test to execute"""
+    def __init__(self, phase):
+        try:
+            f = open('{}'.format(_next_phase), 'r')
+            self.phase = f.read().strip()
+            f.close()
+        except FileNotFoundError:
+            f = open('{}'.format(_next_phase), 'w')
+            f.write("{}\n".format(phase))
+            f.close()
+            os.sync()
+        finally:
+            self.phase = phase
+
+    def current(self):
+        f = open('{}'.format(_next_phase), 'r')
+        self.phase = f.read().strip()
+        f.close()
+        return self.phase
+
+    def next(self, phase):
+        f = open('{}'.format(_next_phase), 'w')
+        f.write("{}\n".format(phase))
+        f.close()
+        os.sync()
+        self.phase = phase
+        return self.phase
+
+    def kill(self):
+        os.unlink('{}'.format(_next_phase))
+
+
+
 def trigger_crash():
     if crash_switch:
         try:
@@ -99,19 +133,12 @@ def set_conffile(test):
 
 
 def run_test(test):
-    f = open('{}'.format(_next_phase), 'w')
     if test == 'local':
-        f.write('ssh\n')
-        f.close()
-        os.sync()
+        action.next('ssh')
     elif test == 'ssh':
-        f.write('nfs\n')
-        f.close()
-        os.sync()
+        action.next('nfs')
     elif test == 'nfs' or test == 'local-only':
-        f.write('completed\n')
-        f.close()
-        os.sync()
+        action.next('completed')
     else:
         raise TypeError("Invalid test")
     trigger_crash()
@@ -154,27 +181,21 @@ if __name__ == '__main__':
     if create_ref_conf() == _EBAD:
         exit(_EBAD)
 
-    try:
-        f = open('{}'.format(_next_phase), 'r')
-        phase = f.read().strip()
-        f.close()
-    except FileNotFoundError:
-        if _local_only:
-            phase = 'local-only'
-        else:
-            phase = 'local'
-    print("Running phase {}".format(phase.upper()))
-    if phase != 'completed':
-        if set_conffile(phase) != _EBAD:
-            run_test(phase)
+    if _local_only:
+        action = Phase('local-only')
+    else:
+        action = Phase('local')
+
+    print("Running phase {}".format(action.current()))
+    if action.phase != 'completed':
+        if set_conffile(action.phase) != _EBAD:
+            run_test(action.phase)
         else:
             print("Unable to continue with tests")
-            f = open('{}'.format(_next_phase), 'w')
-            f.write('completed\n')
-            f.close()
+            action.next('completed')
             exit(_EBAD)
     else:
-        os.unlink('{}'.format(_next_phase))
+        action.kill()
         gather_test_results()
 
 # vim: et ts=4 sw=4
