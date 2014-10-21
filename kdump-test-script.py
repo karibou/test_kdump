@@ -50,7 +50,58 @@ class Phase(object):
     def kill(self):
         os.unlink('{}'.format(_next_phase))
 
-
+    def set_conffile(self):
+        with open("/etc/default/kdump-tools.ref", "r") as orig:
+            try:
+                if self.phase == 'local' or self.phase == 'local-only':
+                    with open("/etc/default/kdump-tools", "w") as new_conf:
+                        for line in orig.readlines():
+                            if line.find('USE_KDUMP') == 0:
+                                new_conf.write("{}".format('USE_KDUMP=1\n'))
+                            else:
+                                new_conf.write("{}".format(line))
+                elif self.phase == 'ssh':
+                    ref = orig.read()
+                    orig.seek(0)
+                    if ref.find("SSH") != -1:
+                        with open("/etc/default/kdump-tools", "w") as new_conf:
+                            for line in orig.readlines():
+                                if line.find('USE_KDUMP') == 0:
+                                    new_conf.write("{}".format('USE_KDUMP=1\n'))
+                                else:
+                                    new_conf.write("{}".format(line))
+                            new_conf.write('SSH="{}"\n'.format(_ssh_remote_server))
+                    else:
+                        print("SSH functionality not found in {}".format(
+                            '/etc/default/kdump-tools'))
+                        return _EBAD
+                elif self.phase == 'nfs':
+                    ref = orig.read()
+                    orig.seek(0)
+                    if ref.find("NFS") != -1:
+                        with open("/etc/default/kdump-tools", "w") as new_conf:
+                            for line in orig.readlines():
+                                if line.find('USE_KDUMP') == 0:
+                                    new_conf.write("{}".format('USE_KDUMP=1\n'))
+                                else:
+                                    new_conf.write("{}".format(line))
+                            new_conf.write('NFS="{}"\n'.format(_nfs_remote_mp))
+                            #
+                            # Adding HOSTTAG to test the functionality
+                            # And avoid name collision b/w SSH and NFS
+                            #
+                            new_conf.write('HOSTTAG="hostname"\n')
+                    else:
+                        print("NFS functionality not found in {}".format(
+                            '/etc/default/kdump-tools'))
+                        return _EBAD
+                else:
+                    raise TypeError("Invalid test")
+            except PermissionError as err:
+                print(("User does not have the privilege "
+                       "to change this file\t{}").format(err))
+                return _EBAD
+        return
 
 def trigger_crash():
     if crash_switch:
@@ -71,60 +122,6 @@ def create_ref_conf():
         try:
             os.rename(
                 "/etc/default/kdump-tools", "/etc/default/kdump-tools.ref")
-        except PermissionError as err:
-            print(("User does not have the privilege "
-                   "to change this file\t{}").format(err))
-            return _EBAD
-    return
-
-
-def set_conffile(test):
-    with open("/etc/default/kdump-tools.ref", "r") as orig:
-        try:
-            if test == 'local' or test == 'local-only':
-                with open("/etc/default/kdump-tools", "w") as new_conf:
-                    for line in orig.readlines():
-                        if line.find('USE_KDUMP') == 0:
-                            new_conf.write("{}".format('USE_KDUMP=1\n'))
-                        else:
-                            new_conf.write("{}".format(line))
-            elif test == 'ssh':
-                ref = orig.read()
-                orig.seek(0)
-                if ref.find("SSH") != -1:
-                    with open("/etc/default/kdump-tools", "w") as new_conf:
-                        for line in orig.readlines():
-                            if line.find('USE_KDUMP') == 0:
-                                new_conf.write("{}".format('USE_KDUMP=1\n'))
-                            else:
-                                new_conf.write("{}".format(line))
-                        new_conf.write('SSH="{}"\n'.format(_ssh_remote_server))
-                else:
-                    print("SSH functionality not found in {}".format(
-                        '/etc/default/kdump-tools'))
-                    return _EBAD
-            elif test == 'nfs':
-                ref = orig.read()
-                orig.seek(0)
-                if ref.find("NFS") != -1:
-                    with open("/etc/default/kdump-tools", "w") as new_conf:
-                        for line in orig.readlines():
-                            if line.find('USE_KDUMP') == 0:
-                                new_conf.write("{}".format('USE_KDUMP=1\n'))
-                            else:
-                                new_conf.write("{}".format(line))
-                        new_conf.write('NFS="{}"\n'.format(_nfs_remote_mp))
-                        #
-                        # Adding HOSTTAG to test the functionality
-                        # And avoid name collision b/w SSH and NFS
-                        #
-                        new_conf.write('HOSTTAG="hostname"\n')
-                else:
-                    print("NFS functionality not found in {}".format(
-                        '/etc/default/kdump-tools'))
-                    return _EBAD
-            else:
-                raise TypeError("Invalid test")
         except PermissionError as err:
             print(("User does not have the privilege "
                    "to change this file\t{}").format(err))
@@ -188,7 +185,7 @@ if __name__ == '__main__':
 
     print("Running phase {}".format(action.current()))
     if action.phase != 'completed':
-        if set_conffile(action.phase) != _EBAD:
+        if action.set_conffile() != _EBAD:
             run_test(action.phase)
         else:
             print("Unable to continue with tests")
