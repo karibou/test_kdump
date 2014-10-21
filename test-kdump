@@ -33,7 +33,6 @@ packages:
  - linux-crashdump
 
 runcmd:
- - [ sed, -i, 's/USE_KDUMP=0/USE_KDUMP=1/', /etc/default/kdump-tools ]
  - [ sed, -i, 's/crashkernel=384M-2G:64M/crashkernel=384M-2G:128M/', /etc/grub.d/10_linux ]
  - echo "StrictHostKeyChecking no" > /root/.ssh/config
  - wget -T30 http://people.canonical.com/~lbouchard/kdump-tools-tests/kdump-test-script.py
