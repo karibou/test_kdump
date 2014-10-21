@@ -7,6 +7,7 @@ from time import time, localtime, sleep
 
 _EBAD = -1
 _crash_dir = '/var/crash'
+_next_phase = '{}/next-test'.format(_crash_dir)
 _ssh_remote_server = 'ubuntu@kdump-netcrash'
 _nfs_remote_mp = 'kdump-netcrash:/var/crash'
 
@@ -98,7 +99,7 @@ def set_conffile(test):
 
 
 def run_test(test):
-    f = open('/var/crash/next-test', 'w')
+    f = open('{}'.format(_next_phase), 'w')
     if test == 'local':
         f.write('ssh\n')
         f.close()
@@ -154,7 +155,7 @@ if __name__ == '__main__':
         exit(_EBAD)
 
     try:
-        f = open('/var/crash/next-test', 'r')
+        f = open('{}'.format(_next_phase), 'r')
         phase = f.read().strip()
         f.close()
     except FileNotFoundError:
@@ -168,12 +169,12 @@ if __name__ == '__main__':
             run_test(phase)
         else:
             print("Unable to continue with tests")
-            f = open('/var/crash/next-test', 'w')
+            f = open('{}'.format(_next_phase), 'w')
             f.write('completed\n')
             f.close()
             exit(_EBAD)
     else:
-        os.unlink('/var/crash/next-test')
+        os.unlink('{}'.format(_next_phase))
         gather_test_results()
 
 # vim: et ts=4 sw=4
