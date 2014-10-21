@@ -67,10 +67,12 @@ class Phase(object):
                         with open("/etc/default/kdump-tools", "w") as new_conf:
                             for line in orig.readlines():
                                 if line.find('USE_KDUMP') == 0:
-                                    new_conf.write("{}".format('USE_KDUMP=1\n'))
+                                    new_conf.write(
+                                        "{}".format('USE_KDUMP=1\n'))
                                 else:
                                     new_conf.write("{}".format(line))
-                            new_conf.write('SSH="{}"\n'.format(_ssh_remote_server))
+                            new_conf.write(
+                                'SSH="{}"\n'.format(_ssh_remote_server))
                     else:
                         print("SSH functionality not found in {}".format(
                             '/etc/default/kdump-tools'))
@@ -82,7 +84,8 @@ class Phase(object):
                         with open("/etc/default/kdump-tools", "w") as new_conf:
                             for line in orig.readlines():
                                 if line.find('USE_KDUMP') == 0:
-                                    new_conf.write("{}".format('USE_KDUMP=1\n'))
+                                    new_conf.write(
+                                        "{}".format('USE_KDUMP=1\n'))
                                 else:
                                     new_conf.write("{}".format(line))
                             new_conf.write('NFS="{}"\n'.format(_nfs_remote_mp))
@@ -102,6 +105,7 @@ class Phase(object):
                        "to change this file\t{}").format(err))
                 return _EBAD
         return
+
 
 def trigger_crash():
     if crash_switch:
@@ -132,7 +136,7 @@ def create_ref_conf():
 def run_test(test):
     if test == 'local':
         load = subprocess.Popen(["kdump-config", "load"])
-        sleep(2)    #wait for the module to load
+        sleep(2)    # wait for the module to load
         action.next('ssh')
     elif test == 'ssh':
         action.next('nfs')
