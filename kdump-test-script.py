@@ -5,7 +5,6 @@ import subprocess
 import socket
 from time import time, localtime, sleep
 
-test_phase = ['local-only', 'local', 'ssh', 'nfs']
 _EBAD = -1
 _crash_dir = '/var/crash'
 _ssh_remote_server = 'ubuntu@kdump-netcrash'
