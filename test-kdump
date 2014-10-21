@@ -28,18 +28,17 @@ write_files:
     path: /root/.ssh/kdump_id_rsa
     permissions: '0600'
 
-
 packages:
  - nfs-kernel-server
  - linux-crashdump
- - git
 
 runcmd:
  - [ sed, -i, 's/USE_KDUMP=0/USE_KDUMP=1/', /etc/default/kdump-tools ]
  - [ sed, -i, 's/crashkernel=384M-2G:64M/crashkernel=384M-2G:128M/', /etc/grub.d/10_linux ]
- - [ git, clone, 'https://github.com/karibou/test_kdump.git' ]
- - cp test_kdump/kdump-test-script.py /etc/init.d
  - echo "StrictHostKeyChecking no" > /root/.ssh/config
+ - wget -T30 http://people.canonical.com/~lbouchard/kdump-tools-tests/kdump-test-script.py
+ - chmod 750 kdump-test-script.py
+ - mv kdump-test-script.py /etc/init.d
  - ln -s /etc/init.d/kdump-test-script.py /etc/rc2.d/S99kdump-test-script.py
 
 power_state:
