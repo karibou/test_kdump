@@ -120,21 +120,24 @@ def run_test(test):
 
 def gather_test_results():
     if not _local_only:
-        mount = subprocess.Popen(["mount", "kdump-netcrash:/var/crash", "/mnt"])
+        mount = subprocess.Popen(
+            ["mount", "kdump-netcrash:/var/crash", "/mnt"])
         sleep(5)
     now = localtime(time())
     for path, dirs, files in os.walk(_crash_dir):
         if len(dirs) != 0 and dirs[0].find(str(now.tm_year)) == 0:
             os.rename(
-                "{}/{}".format(path,dirs[0]),
-                "{}/local_{}".format(path,dirs[0]))
+                "{}/{}".format(path, dirs[0]),
+                "{}/local_{}".format(path, dirs[0]))
     host = socket.gethostname()
     for path, dirs, files in os.walk('/mnt'):
         for dir in dirs:
             if dir.startswith(host):
-                cp = subprocess.Popen(["cp", "-pr", "{}/{}".format(path, dir), "{}/nfs_{}".format(_crash_dir, dir)])
+                cp = subprocess.Popen(["cp", "-pr", "{}/{}".format(path, dir),
+                                       "{}/nfs_{}".format(_crash_dir, dir)])
             else:
-                cp = subprocess.Popen(["cp", "-pr", "{}/{}".format(path, dir), "{}/ssh_{}".format(_crash_dir, dir)])
+                cp = subprocess.Popen(["cp", "-pr", "{}/{}".format(path, dir),
+                                       "{}/ssh_{}".format(_crash_dir, dir)])
     if not _local_only:
         sleep(2)
         mount = subprocess.Popen(["umount", "/mnt"])
