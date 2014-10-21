@@ -131,6 +131,8 @@ def create_ref_conf():
 
 def run_test(test):
     if test == 'local':
+        load = subprocess.Popen(["kdump-config", "load"])
+        sleep(2)    #wait for the module to load
         action.next('ssh')
     elif test == 'ssh':
         action.next('nfs')
