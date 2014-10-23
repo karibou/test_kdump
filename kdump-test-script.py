@@ -16,8 +16,9 @@ _conffile = "/etc/default/kdump-tools"
 #
 # Used to indicate that netdump tests
 # should not be run (SSH & NFS)
+# Define LOCAL_ONLY = 1 as an environment variable
 #
-_local_only = False
+_local_only = bool(os.environ.get('LOCAL_ONLY', False))
 
 
 class Phase(object):
