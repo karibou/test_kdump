@@ -3,7 +3,7 @@ import os
 import sys
 import subprocess
 import socket
-from time import time, localtime, sleep
+import time
 
 _EBAD = -1
 _crash_dir = '/var/crash'
@@ -140,7 +140,7 @@ def create_ref_conf():
 def run_test(test):
     if test == 'local':
         subprocess.Popen(["kdump-config", "load"])
-        sleep(2)    # wait for the module to load
+        time.sleep(2)    # wait for the module to load
         action.next('ssh')
     elif test == 'ssh':
         action.next('nfs')
@@ -156,8 +156,8 @@ def gather_test_results():
     if not _local_only:
         subprocess.Popen(
             ["mount", "kdump-netcrash:/var/crash", "/mnt"])
-        sleep(5)
-    now = localtime(time())
+        time.sleep(5)
+    now = time.localtime(time.time())
     for path, dirs, files in os.walk(_crash_dir):
         if len(dirs) != 0 and dirs[0].find(str(now.tm_year)) == 0:
             os.rename(
@@ -173,7 +173,7 @@ def gather_test_results():
                 subprocess.Popen(["cp", "-pr", "{}/{}".format(path, dir),
                                        "{}/ssh_{}".format(_crash_dir, dir)])
     if not _local_only:
-        sleep(2)
+        time.sleep(2)
         subprocess.Popen(["umount", "/mnt"])
 
 
