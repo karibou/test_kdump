@@ -139,7 +139,7 @@ def create_ref_conf():
 
 def run_test(test):
     if test == 'local':
-        load = subprocess.Popen(["kdump-config", "load"])
+        subprocess.Popen(["kdump-config", "load"])
         sleep(2)    # wait for the module to load
         action.next('ssh')
     elif test == 'ssh':
@@ -154,7 +154,7 @@ def run_test(test):
 
 def gather_test_results():
     if not _local_only:
-        mount = subprocess.Popen(
+        subprocess.Popen(
             ["mount", "kdump-netcrash:/var/crash", "/mnt"])
         sleep(5)
     now = localtime(time())
@@ -167,14 +167,14 @@ def gather_test_results():
     for path, dirs, files in os.walk('/mnt'):
         for dir in dirs:
             if dir.startswith(host):
-                cp = subprocess.Popen(["cp", "-pr", "{}/{}".format(path, dir),
+                subprocess.Popen(["cp", "-pr", "{}/{}".format(path, dir),
                                        "{}/nfs_{}".format(_crash_dir, dir)])
             else:
-                cp = subprocess.Popen(["cp", "-pr", "{}/{}".format(path, dir),
+                subprocess.Popen(["cp", "-pr", "{}/{}".format(path, dir),
                                        "{}/ssh_{}".format(_crash_dir, dir)])
     if not _local_only:
         sleep(2)
-        mount = subprocess.Popen(["umount", "/mnt"])
+        subprocess.Popen(["umount", "/mnt"])
 
 
 if __name__ == '__main__':
