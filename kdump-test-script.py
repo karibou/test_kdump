@@ -128,7 +128,8 @@ def create_ref_conf():
     except FileNotFoundError:
         try:
             os.rename(
-                "{}".format(_conffile), "{}.ref".format(_conffile))
+                "{}".format(_conffile),
+                "{}.ref".format(_conffile))
         except PermissionError as err:
             print(("User does not have the privilege "
                    "to change this file\t{}").format(err))
