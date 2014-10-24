@@ -174,11 +174,13 @@ def gather_test_results():
         for dir in dirs:
             try:
                 if dir.startswith(host):
-                    cp = subprocess.check_output(["cp", "-pr", "{}/{}".format(path, dir),
-                                        "{}/nfs_{}".format(_crash_dir, dir)])
+                    cp = subprocess.check_output([
+                        "cp", "-pr", "{}/{}".format(path, dir),
+                        "{}/nfs_{}".format(_crash_dir, dir)])
                 else:
-                    cp = subprocess.check_output(["cp", "-pr", "{}/{}".format(path, dir),
-                                        "{}/ssh_{}".format(_crash_dir, dir)])
+                    cp = subprocess.check_output([
+                        "cp", "-pr", "{}/{}".format(path, dir),
+                        "{}/ssh_{}".format(_crash_dir, dir)])
             except subprocess.CalledProcessError:
                 print("Unable to copy files from remote server")
                 return _EBAD
