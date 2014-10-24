@@ -139,8 +139,11 @@ def create_ref_conf():
 
 def run_test(test):
     if test == 'local':
-        subprocess.Popen(["kdump-config", "load"])
-        time.sleep(2)    # wait for the module to load
+        try:
+            load = subprocess.check_output(["kdump-config", "load"])
+        except subprocess.CalledProcessError:
+            print("Unable to load kdump module")
+            return _EBAD
         action.next('ssh')
     elif test == 'ssh':
         action.next('nfs')
@@ -154,9 +157,12 @@ def run_test(test):
 
 def gather_test_results():
     if not _local_only:
-        subprocess.Popen(
-            ["mount", "kdump-netcrash:/var/crash", "/mnt"])
-        time.sleep(5)
+        try:
+            subprocess.check_output(
+                ["mount", "kdump-netcrash:/var/crash", "/mnt"])
+        except subprocess.CalledProcessError:
+            print("Unable to mount remote server to collect results")
+            return _EBAD
     now = time.localtime(time.time())
     for path, dirs, files in os.walk(_crash_dir):
         if len(dirs) != 0 and dirs[0].find(str(now.tm_year)) == 0:
@@ -166,15 +172,23 @@ def gather_test_results():
     host = socket.gethostname()
     for path, dirs, files in os.walk('/mnt'):
         for dir in dirs:
-            if dir.startswith(host):
-                subprocess.Popen(["cp", "-pr", "{}/{}".format(path, dir),
-                                       "{}/nfs_{}".format(_crash_dir, dir)])
-            else:
-                subprocess.Popen(["cp", "-pr", "{}/{}".format(path, dir),
-                                       "{}/ssh_{}".format(_crash_dir, dir)])
+            try:
+                if dir.startswith(host):
+                    cp = subprocess.check_output(["cp", "-pr", "{}/{}".format(path, dir),
+                                        "{}/nfs_{}".format(_crash_dir, dir)])
+                else:
+                    cp = subprocess.check_output(["cp", "-pr", "{}/{}".format(path, dir),
+                                        "{}/ssh_{}".format(_crash_dir, dir)])
+            except subprocess.CalledProcessError:
+                print("Unable to copy files from remote server")
+                return _EBAD
+
     if not _local_only:
-        time.sleep(2)
-        subprocess.Popen(["umount", "/mnt"])
+        try:
+            mount = subprocess.check_output(["umount", "/mnt"])
+        except subprocess.CalledProcessError:
+            print("Unable to unmount /mnt")
+            return _EBAD
 
 
 if __name__ == '__main__':
