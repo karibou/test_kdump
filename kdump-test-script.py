@@ -2,8 +2,10 @@
 import os
 import sys
 import subprocess
-import socket
 import time
+import platform
+import apt
+import apt.progress
 
 _EBAD = -1
 _crash_dir = '/var/crash'
@@ -19,6 +21,7 @@ _conffile = "/etc/default/kdump-tools"
 # Define LOCAL_ONLY = 1 as an environment variable
 #
 _local_only = bool(os.environ.get('LOCAL_ONLY', False))
+_no_result = bool(os.environ.get('NO_RESULT', False))
 
 
 class Phase(object):
@@ -196,6 +199,57 @@ def gather_test_results():
             print("Unable to unmount /mnt")
             return _EBAD
 
+def crash_check(kernel, core):
+    print("running crash -st {} {}".format(kernel, core))
+    try:
+        subprocess.check_output(["crash", "-st", kernel, core], stderr=subprocess.DEVNULL)
+        return
+    except subprocess.CalledProcessError as crash_error :
+        print("crash test failed for {}".format(core))
+        print("Error Output\n{}".format(crash_error.output.decode("UTF-8")))
+        return _EBAD
+
+def analyse_results():
+    if _no_result:
+        print("Result Analysis overriden by NO_RESULT")
+        return
+    else:
+        print("Running result analysis")
+        #
+        # First we get the dbgsym package
+        #
+        with open("/etc/apt/sources.list.d/ddebs.list", "w") as ddebs:
+            try:
+                release= platform.dist()[2]
+                for archive in '', '-security', '-updates', '-proposed':
+                    ddebs.write(("deb http://ddebs.ubuntu.com/ {}{:10}"
+                    "main restricted universe multiverse\n".format(release, archive)))
+                ddebs.close()
+            except:
+                print("Unable to create /etc/apt/sources.list.d/ddebs.list")
+                return _EBAD
+        print("Updating APT cache with new sources")
+        cache=apt.Cache()
+        kern_vers = platform.release()
+        cache.update()
+        cache.open()
+        pkg = cache['linux-image-{}-dbgsym'.format(kern_vers)]
+        if not pkg.is_installed:
+            try:
+                pkg.mark_install()
+                print("Installing linux-image-{}-dbgsym".format(kern_vers))
+                cache.commit()
+            except KeyError:
+                print("Unable to find linux-image-{}-dbgsym".format(kern_vers))
+                return _EBAD
+
+        namelist = '/usr/lib/debug/boot/vmlinux-{}'.format(kern_vers)
+
+        for path, dirs, files in os.walk(_crash_dir):
+            if not dirs:
+                dumpfile = [dumpfile for dumpfile in files if 'dump' in dumpfile][0]
+                error = crash_check(namelist, '{}/{}'.format(path, dumpfile))
+        return error
 
 if __name__ == '__main__':
 
@@ -223,6 +277,10 @@ if __name__ == '__main__':
             sys.exit(_EBAD)
     else:
         action.kill()
-        gather_test_results()
+        ret = gather_test_results()
+        if not ret:
+            ret = analyse_results()
+        else:
+            sys.exit(ret)
 
 # vim: et ts=4 sw=4
