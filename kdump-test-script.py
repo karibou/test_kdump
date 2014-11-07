@@ -134,6 +134,9 @@ def create_ref_conf():
             print(("User does not have the privilege "
                    "to change this file\t{}").format(err))
             return _EBAD
+        except FileNotFoundError:
+            print("Unable to find {}".format(_conffile))
+            return _EBAD
     return
 
 
@@ -165,25 +168,26 @@ def gather_test_results():
             return _EBAD
     now = time.localtime(time.time())
     for path, dirs, files in os.walk(_crash_dir):
-        if len(dirs) != 0 and dirs[0].find(str(now.tm_year)) == 0:
+        if dirs and dirs[0].find(str(now.tm_year)) == 0:
             os.rename(
                 "{}/{}".format(path, dirs[0]),
                 "{}/local_{}".format(path, dirs[0]))
-    host = socket.gethostname()
-    for path, dirs, files in os.walk('/mnt'):
-        for dir in dirs:
-            try:
-                if dir.startswith(host):
-                    cp = subprocess.check_output([
-                        "cp", "-pr", "{}/{}".format(path, dir),
-                        "{}/nfs_{}".format(_crash_dir, dir)])
-                else:
-                    cp = subprocess.check_output([
-                        "cp", "-pr", "{}/{}".format(path, dir),
-                        "{}/ssh_{}".format(_crash_dir, dir)])
-            except subprocess.CalledProcessError:
-                print("Unable to copy files from remote server")
-                return _EBAD
+    if not _local_only:
+        host = platform.node()
+        for path, dirs, files in os.walk('/mnt'):
+            for dir in dirs:
+                try:
+                    if dir.startswith(host):
+                        cp = subprocess.check_output([
+                            "cp", "-pr", "{}/{}".format(path, dir),
+                            "{}/nfs_{}".format(_crash_dir, dir)])
+                    else:
+                        cp = subprocess.check_output([
+                            "cp", "-pr", "{}/{}".format(path, dir),
+                            "{}/ssh_{}".format(_crash_dir, dir)])
+                except subprocess.CalledProcessError:
+                    print("Unable to copy files from remote server")
+                    return _EBAD
 
     if not _local_only:
         try:
@@ -216,7 +220,7 @@ if __name__ == '__main__':
         else:
             print("Unable to continue with tests")
             action.next('completed')
-            exit(_EBAD)
+            sys.exit(_EBAD)
     else:
         action.kill()
         gather_test_results()
