@@ -14,7 +14,7 @@
 #package_upgrade: true
 hostname: test-kdump
 manage_etc_hosts: true
-#apt_proxy: http://192.168.1.11:8000
+apt_proxy: http://192.168.1.11:8000
 ssh_import_id: [louis-bouchard]
 
 
@@ -39,6 +39,7 @@ runcmd:
  - chmod 750 kdump-test-script.py
  - mv kdump-test-script.py /etc/init.d
  - ln -s /etc/init.d/kdump-test-script.py /etc/rc2.d/S99kdump-test-script.py
+ - echo "LOCAL_ONLY=1" >> /etc/environment
 
 power_state:
  delay: now
