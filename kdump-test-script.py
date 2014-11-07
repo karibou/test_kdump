@@ -23,8 +23,8 @@ def get_defaults():
         with open("{}".format(_defaults_file, 'r')) as defaults:
             for env_var in defaults.readlines():
                 var = env_var.partition('=')[0]
-                val = "{}".format(env_var.partition('=')[len(env_var.partition('='))-1])
-                if not var.startswith("#"):
+                val = "{}".format(env_var.partition('=')[len(env_var.partition('='))-1]).strip()
+                if not var.startswith("#") and val != '0':
                     os.environ.setdefault('{}'.format(var), '{}'.format(val))
     except FileNotFoundError:
             pass
