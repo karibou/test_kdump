@@ -23,6 +23,23 @@ If the user do not want to run the networked kernel dump functionalities, then
 the environment variable LOCAL_ONLY needs to be set to 1. In that case, the
 *kdump-netcrash* instance is not required and only local tests will be performed.
 
+Test Result Analysis
+====================
+
+The default behavior is to run a crash session on each of the generated crash dump to
+confirm that the kernel crash dumps gathered are valid. This is a lengthy process as
+the test script must download the kernel with debug symbols from the archive. This
+package is over 300Mb so it can take time.
+
+It is possible to override this phase and only run the crash tests by setting up the
+NO_RESULT environment variable to 1. This will tell the script not to run the result
+verification phase.
+
+Variable pre-definition in default file
+=======================================
+It is possible to define the environment variables described above in a file called
+/etc/default/kdump-test-script. The file is read upon startup and if it exists, it
+will define the environment variable to be used.
 Theory of operation
 -------------------
 
@@ -77,14 +94,3 @@ Once kdump-netcrash has finished its setup; start the second instance that will 
 
     $ uvt-kvm create test-kdump release=trusty arch=amd64 --user-data test-kdump
 
-Test Result Analysis
-====================
-
-The default behavior is to run a crash session on each of the generated crash dump to
-confirm that the kernel crash dumps gathered are valid. This is a lengthy process as
-the test script must download the kernel with debug symbols from the archive. This
-package is over 300Mb so it can take time.
-
-It is possible to override this phase and only run the crash tests by setting up the
-NO_RESULT environment variable to 1. This will tell the script not to run the result
-verification phase.
