@@ -17,17 +17,19 @@ _conffile = "/etc/default/kdump-tools"
 _defaults_file = "/etc/default/kdump-test-script"
 
 
-
 def get_defaults():
     try:
         with open("{}".format(_defaults_file, 'r')) as defaults:
             for env_var in defaults.readlines():
                 var = env_var.partition('=')[0]
-                val = "{}".format(env_var.partition('=')[len(env_var.partition('='))-1]).strip()
+                val = "{}".format(env_var.partition('=')[
+                    len(env_var.partition('='))-1]).strip()
                 if not var.startswith("#") and val != '0':
                     os.environ.setdefault('{}'.format(var), '{}'.format(val))
     except FileNotFoundError:
             pass
+
+
 class Phase(object):
     """The phase of the test to execute"""
     def __init__(self, phase):
@@ -203,15 +205,18 @@ def gather_test_results():
             print("Unable to unmount /mnt")
             return _EBAD
 
+
 def crash_check(kernel, core):
     print("running crash -st {} {}".format(kernel, core))
     try:
-        subprocess.check_output(["crash", "-st", kernel, core], stderr=subprocess.DEVNULL)
+        subprocess.check_output(["crash", "-st", kernel, core],
+                                stderr=subprocess.DEVNULL)
         return
-    except subprocess.CalledProcessError as crash_error :
+    except subprocess.CalledProcessError as crash_error:
         print("crash test failed for {}".format(core))
         print("Error Output\n{}".format(crash_error.output.decode("UTF-8")))
         return _EBAD
+
 
 def analyse_results():
     if _no_result:
@@ -224,16 +229,17 @@ def analyse_results():
         #
         with open("/etc/apt/sources.list.d/ddebs.list", "w") as ddebs:
             try:
-                release= platform.dist()[2]
+                release = platform.dist()[2]
                 for archive in '', '-security', '-updates', '-proposed':
                     ddebs.write(("deb http://ddebs.ubuntu.com/ {}{:10}"
-                    "main restricted universe multiverse\n".format(release, archive)))
+                                 "main restricted universe multiverse\n"
+                                 .format(release, archive)))
                 ddebs.close()
             except:
                 print("Unable to create /etc/apt/sources.list.d/ddebs.list")
                 return _EBAD
         print("Updating APT cache with new sources")
-        cache=apt.Cache()
+        cache = apt.Cache()
         kern_vers = platform.release()
         cache.update()
         cache.open()
@@ -251,7 +257,8 @@ def analyse_results():
 
         for path, dirs, files in os.walk(_crash_dir):
             if not dirs:
-                dumpfile = [dumpfile for dumpfile in files if 'dump' in dumpfile][0]
+                dumpfile = [dumpfile for dumpfile in files
+                            if 'dump' in dumpfile][0]
                 error = crash_check(namelist, '{}/{}'.format(path, dumpfile))
         return error
 
