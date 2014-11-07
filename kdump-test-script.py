@@ -14,16 +14,20 @@ _remote_server = 'kdump-netcrash'
 _ssh_remote_server = 'ubuntu@{}'.format(_remote_server)
 _nfs_remote_mp = '{}:/var/crash'.format(_remote_server)
 _conffile = "/etc/default/kdump-tools"
-
-#
-# Used to indicate that netdump tests
-# should not be run (SSH & NFS)
-# Define LOCAL_ONLY = 1 as an environment variable
-#
-_local_only = bool(os.environ.get('LOCAL_ONLY', False))
-_no_result = bool(os.environ.get('NO_RESULT', False))
+_defaults_file = "/etc/default/kdump-test-script"
 
 
+
+def get_defaults():
+    try:
+        with open("{}".format(_defaults_file, 'r')) as defaults:
+            for env_var in defaults.readlines():
+                var = env_var.partition('=')[0]
+                val = "{}".format(env_var.partition('=')[len(env_var.partition('='))-1])
+                if not var.startswith("#"):
+                    os.environ.setdefault('{}'.format(var), '{}'.format(val))
+    except FileNotFoundError:
+            pass
 class Phase(object):
     """The phase of the test to execute"""
     def __init__(self, phase):
@@ -252,6 +256,19 @@ def analyse_results():
         return error
 
 if __name__ == '__main__':
+    # First get the environment variable
+    # if they are defined in /etc/default/test-kdump-script
+    #
+    get_defaults()
+
+    # If not, they can still be defined in the environment.
+    # Define LOCAL_ONLY = 1 as an environment variable
+    # to indicate that netdump tests should not be run (SSH & NFS)
+    #
+    # NO_RESULT = 1 will override the analysis of the results
+    # which can be time consuming
+    _local_only = bool(os.environ.get('LOCAL_ONLY', False))
+    _no_result = bool(os.environ.get('NO_RESULT', False))
 
     if len(sys.argv) > 1:
         crash_switch = True
