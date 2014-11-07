@@ -8,6 +8,7 @@ import apt
 import apt.progress
 
 _EBAD = -1
+_EOK = 0
 _crash_dir = '/var/crash'
 _next_phase = '{}/next-test'.format(_crash_dir)
 _remote_server = 'kdump-netcrash'
@@ -211,7 +212,8 @@ def crash_check(kernel, core):
     try:
         subprocess.check_output(["crash", "-st", kernel, core],
                                 stderr=subprocess.DEVNULL)
-        return
+        print("crash test succeeded for {}".format(core))
+        return _EOK
     except subprocess.CalledProcessError as crash_error:
         print("crash test failed for {}".format(core))
         print("Error Output\n{}".format(crash_error.output.decode("UTF-8")))
@@ -255,11 +257,13 @@ def analyse_results():
 
         namelist = '/usr/lib/debug/boot/vmlinux-{}'.format(kern_vers)
 
+        error = 0
         for path, dirs, files in os.walk(_crash_dir):
             if not dirs:
                 dumpfile = [dumpfile for dumpfile in files
                             if 'dump' in dumpfile][0]
-                error = crash_check(namelist, '{}/{}'.format(path, dumpfile))
+                error = error | crash_check(namelist, '{}/{}'.
+                                            format(path, dumpfile))
         return error
 
 if __name__ == '__main__':
@@ -304,7 +308,6 @@ if __name__ == '__main__':
         ret = gather_test_results()
         if not ret:
             ret = analyse_results()
-        else:
-            sys.exit(ret)
+        sys.exit(ret)
 
 # vim: et ts=4 sw=4
