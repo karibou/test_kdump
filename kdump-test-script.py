@@ -309,10 +309,9 @@ if __name__ == '__main__':
         if not ret:
             ret = analyse_results()
             if not ret:
-                print("Failure during analysis of the results")
-            else:
                 print("All test succeeded")
-        else:
-            sys.exit(ret)
+            else:
+                print("Failure during analysis of the results")
+        sys.exit(ret)
 
 # vim: et ts=4 sw=4
