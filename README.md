@@ -40,6 +40,7 @@ Variable pre-definition in default file
 It is possible to define the environment variables described above in a file called
 /etc/default/kdump-test-script. The file is read upon startup and if it exists, it
 will define the environment variable to be used.
+
 Theory of operation
 -------------------
 
@@ -86,6 +87,8 @@ for the first time :
 Add the private key to kdump-test
 Add the public key to kdump-netcrash
 
+Using Uvtools:
+--------------
 Create the kdump-netcrash instance 
 
     $ uvt-kvm create kdump-netcrash release=trusty arch=amd64 --user-data kdump-netcrash
@@ -94,3 +97,34 @@ Once kdump-netcrash has finished its setup; start the second instance that will 
 
     $ uvt-kvm create test-kdump release=trusty arch=amd64 --user-data test-kdump
 
+Using standard KVM:
+-------------------
+
+Starting with a freshly installed instance, you will need to add the following :
+
+    $ sudo apt-get install cloud-init
+
+On the hypervisor where you will be creating the VM, install the following package :
+
+    $ sudo apt-get install cloud-image-utils
+
+This is required to gain access to the cloud-localds command.  The cloud-image-utils 
+is not available in debian but is only used to inject the user-data into a small disk image.
+This can be done on a small Ubuntu instance or in a container.
+
+The *my-seed.img* image will be attached to the VM as a second disk which will be detected
+by cloud-init and mounted to get access to the cloud-config commands.
+
+If you plan to run multiple tests, it is better to work on clones of the VM where you installed
+the *cloud-init* package. The following example suppose that the Sid-cloudref is the instance
+where you have installed cloud-init.
+
+    $ sudo virt-clone --connect=qemu:///system -o Sid-cloudref -n Sid-cloud \
+                    -f /var/lib/libvirt/images/Sid-cloud.img
+    $ rm -f my-seed.img && sudo cloud-localds my-seed.img test-kdump-systemd
+    $ virsh attach-disk Sid-cloud $(pwd)/my-seed.img vdb --driver=qemu --subdriver=raw --config
+
+TODO:
+=====
+ 1. Get rid of the depencency to an URL to download the files
+ 2. 
