@@ -151,16 +151,19 @@ def create_ref_conf():
 
 
 def run_test(test):
-    if test == 'local':
+    if test == 'local' or test == 'local-only':
         try:
             load = subprocess.check_output(["kdump-config", "load"])
         except subprocess.CalledProcessError:
             print("Unable to load kdump module")
             return _EBAD
-        action.next('ssh')
+        if test == 'local-only':
+            action.next('completed')
+        else:
+            action.next('ssh')
     elif test == 'ssh':
         action.next('nfs')
-    elif test == 'nfs' or test == 'local-only':
+    elif test == 'nfs':
         action.next('completed')
     else:
         raise TypeError("Invalid test")
