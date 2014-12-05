@@ -1,0 +1,13 @@
+[Unit]
+Description=Kernel crash dump test service
+Requires=kdump-tools.service
+
+[Service]
+Type=oneshot
+StandardOutput=syslog+console
+EnvironmentFile=/etc/default/kdump-test-script
+ExecStart=/etc/init.d/kdump-test-script.py start
+RemainAfterExit=yes
+
+[Install]
+WantedBy=graphical.target
