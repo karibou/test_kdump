@@ -30,7 +30,9 @@ write_files:
 
 packages:
  - nfs-kernel-server
- - linux-crashdump
+ - makedumpfile
+ - kdump-tools
+ - crash
 
 runcmd:
  - [ sed, -i, 's/crashkernel=384M-2G:64M/crashkernel=384M-2G:128M/', /etc/grub.d/10_linux ]
