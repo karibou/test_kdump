@@ -1,0 +1,5 @@
+virsh undefine Sid-kdump-netcrash
+sudo rm -f /var/lib/libvirt/images/Sid-kdump-netcrash.img
+sudo virt-clone --connect=qemu:///system -o Sid-cloudref -n Sid-kdump-netcrash -f /var/lib/libvirt/images/Sid-kdump-netcrash.img
+rm -f my-seed-netcrash.img && sudo cloud-localds my-seed-netcrash.img kdump-netcrash
+virsh attach-disk Sid-kdump-netcrash $(pwd)/my-seed-netcrash.img vdb --driver=qemu --subdriver=raw --config
