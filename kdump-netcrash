@@ -27,6 +27,11 @@ packages:
 
 runcmd:
  - echo "/var/crash *(rw,sync,no_root_squash)" >> /etc/exports
+# Required if systemd
+ - [ mkdir, /var/crash ]
+# Debian specifics
+# Remove the ssh login disable if on Debian
+ - [ sed, -i, 's/^no.*" //', /root/.ssh/authorized_keys ]
 
 power_state:
  delay: now
