@@ -1,6 +1,6 @@
 [Unit]
 Description=Kernel crash dump test service
-Requires=kdump-tools.service
+After=kdump-tools.service
 
 [Service]
 Type=oneshot
