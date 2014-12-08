@@ -12,7 +12,7 @@ _EOK = 0
 _crash_dir = '/var/crash'
 _next_phase = '{}/next-test'.format(_crash_dir)
 _remote_server = 'kdump-netcrash'
-_ssh_remote_server = 'ubuntu@{}'.format(_remote_server)
+_remote_user = 'ubuntu'
 _nfs_remote_mp = '{}:/var/crash'.format(_remote_server)
 _conffile = "/etc/default/kdump-tools"
 _defaults_file = "/etc/default/kdump-test-script"
@@ -283,6 +283,10 @@ if __name__ == '__main__':
     # which can be time consuming
     _local_only = bool(os.environ.get('LOCAL_ONLY', False))
     _no_result = bool(os.environ.get('NO_RESULT', False))
+    user = os.environ.get('REMOTE_USER')
+    if user:
+        _remote_user = user
+    _ssh_remote_server = '{}@{}'.format(_remote_user, _remote_server)
 
     if len(sys.argv) > 1:
         crash_switch = True
