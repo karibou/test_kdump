@@ -36,9 +36,12 @@ packages:
 runcmd:
 # Debian specific commands. Remove comments as needed
 # Needed to avoid kexec reboot on Debian
- - touch /tmp/no-kexec-reboot
+# - touch /tmp/no-kexec-reboot
+# - [ sed, -i, 's/115200/115200 crashkernel=128M/', /etc/default/grub ]
+
 # Ubuntu specific commands. Remove comments as needed
- - [ sed, -i, 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="init=\/lib\/systemd\/systemd"/', /etc/default/grub ]
+# - [ sed, -i, 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="init=\/lib\/systemd\/systemd"/', /etc/default/grub ]
+
 # Test specific toggles
 # - echo "LOCAL_ONLY=1" > /etc/default/kdump-test-script
 # - echo "NO_RESULT=1" >> /etc/default/kdump-test-script
