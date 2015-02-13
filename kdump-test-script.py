@@ -248,15 +248,15 @@ def analyse_results():
         kern_vers = platform.release()
         cache.update()
         cache.open()
-        pkg = cache['linux-image-{}-dbgsym'.format(kern_vers)]
-        if not pkg.is_installed:
-            try:
+        try:
+            pkg = cache['linux-image-{}-dbgsym'.format(kern_vers)]
+            if not pkg.is_installed:
                 pkg.mark_install()
                 print("Installing linux-image-{}-dbgsym".format(kern_vers))
                 cache.commit()
-            except KeyError:
-                print("Unable to find linux-image-{}-dbgsym".format(kern_vers))
-                return _EBAD
+        except KeyError:
+            print("Unable to find linux-image-{}-dbgsym".format(kern_vers))
+            return _EBAD
 
         namelist = '/usr/lib/debug/boot/vmlinux-{}'.format(kern_vers)
 
