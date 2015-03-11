@@ -14,12 +14,12 @@
 #package_upgrade: true
 hostname: test-kdump
 manage_etc_hosts: true
-apt_proxy: http://192.168.1.11:8000
+#apt_proxy: http://192.168.1.11:8000
 ssh_import_id: [louis-bouchard]
 
 
-apt_sources:
-  - source: "ppa:louis-bouchard/networked-kdump"
+#apt_sources:
+#  - source: "ppa:louis-bouchard/networked-kdump"
 
 write_files:
 -   encoding: b64
@@ -35,13 +35,24 @@ packages:
  - crash
 
 runcmd:
- - [ sed, -i, 's/crashkernel=384M-2G:64M/crashkernel=384M-2G:128M/', /etc/grub.d/10_linux ]
+# Debian specific commands. Remove comments as needed
+# Needed to avoid kexec reboot on Debian
+# - touch /tmp/no-kexec-reboot
+# - [ sed, -i, 's/115200/115200 crashkernel=128M/', /etc/default/grub ]
+
+# Ubuntu specific commands. Remove comments as needed
+# - [ sed, -i, 's/crashkernel=384M-2G:64M/crashkernel=384M-2G:128M/', /etc/grub.d/10_linux ]
+
+# Test specific toggles
+# - echo "LOCAL_ONLY=1" > /etc/default/kdump-test-script
+# - echo "NO_RESULT=1" >> /etc/default/kdump-test-script
+# - echo "REMOTE_USER=root" >> /etc/default/kdump-test-script
+#
  - echo "StrictHostKeyChecking no" > /root/.ssh/config
  - wget -T30 http://people.canonical.com/~lbouchard/kdump-tools-tests/kdump-test-script.py
  - chmod 750 kdump-test-script.py
  - mv kdump-test-script.py /etc/init.d
  - ln -s /etc/init.d/kdump-test-script.py /etc/rc2.d/S99kdump-test-script.py
- - echo "LOCAL_ONLY=1" >> /etc/environment
 
 power_state:
  delay: now
