@@ -1,4 +1,4 @@
-import unittest, sys, os
+import unittest, sys, os, tempfile, shutil
 import mock
 import gentest
 
@@ -6,11 +6,15 @@ import gentest
 class gentestTests(unittest.TestCase):
     @classmethod
     def setUpClass(letest):
-        pass
+        letest.workdir = tempfile.mkdtemp()
+        gentest.PWD = letest.workdir
+        letest.context = {'do_upgrade': False, 'force': False,
+                          'use_proxy': False, 'do_update': False,
+                          'output_file': ['test-kdump']}
 
     @classmethod
     def tearDownClass(letest):
-        pass
+        shutil.rmtree(letest.workdir)
 
     def test_parser(self):
         args = mock.Mock()
