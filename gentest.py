@@ -73,7 +73,5 @@ def parse_arguments(args):
 
 if __name__ == '__main__':
     context = parse_arguments(sys.argv[1:])
-    print("argv : %s" % sys.argv[1:])
 
     render('test-kdump', '/home/caribou/git/test_kdump/mykdump', context)
-    print("context : %s" % context)
