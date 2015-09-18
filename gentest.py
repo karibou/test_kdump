@@ -38,7 +38,7 @@ def render(source, target, context, templates_dir=None, encoding='UTF-8'):
 
     if os.path.exists(target) and not context['force']:
         print("File %s already exists" % target)
-        return
+        return(1)
 
     if templates_dir is None:
         templates_dir = os.path.join('.', 'templates')
