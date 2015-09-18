@@ -67,6 +67,8 @@ def parse_arguments(args):
                         help='force apt-get upgrade')
     parser.add_argument('-p', '--use-proxy', action='store_true',
                         help='Enable local proxy')
+    parser.add_argument('-o', '--output-file', nargs=1, default=['test-kdump'],
+                        help='Output filename (default: test-kdump')
     args = vars(parser.parse_args())
     return(args)
 
@@ -74,4 +76,5 @@ def parse_arguments(args):
 if __name__ == '__main__':
     context = parse_arguments(sys.argv[1:])
 
-    render('test-kdump', '/home/caribou/git/test_kdump/mykdump', context)
+    target = os.path.join(os.getenv('PWD'), context['output_file'][0])
+    render('test-kdump', target, context)
