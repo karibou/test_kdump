@@ -16,10 +16,4 @@ class gentestTests(unittest.TestCase):
     def tearDownClass(letest):
         shutil.rmtree(letest.workdir)
 
-    def test_parser(self):
-        args = mock.Mock()
 
-        mock.patch('parser.parse_args')
-        args.call_args = ['--force', '--do-update', '--do-upgrade', '--use-proxy']
-        self.context = gentest.parse_arguments(args.call_args)
-        # self.assertTrue(context['force'])
