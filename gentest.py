@@ -47,9 +47,8 @@ def render(source, target, context, templates_dir=None, encoding='UTF-8'):
         source = source
         template = loader.get_template(source)
     except exceptions.TemplateNotFound as e:
-        hookenv.log('Could not load template %s from %s.' %
-                    (source, templates_dir),
-                    level=hookenv.ERROR)
+        print('Could not load template %s from %s.' %
+                    (source, templates_dir))
         raise e
     content = template.render(context)
     with open(target, 'wb') as file:
