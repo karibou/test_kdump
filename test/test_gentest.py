@@ -1,6 +1,7 @@
 import unittest, sys, os, tempfile, shutil
 import mock
 import gentest
+from jinja2 import exceptions
 
 
 class gentestTests(unittest.TestCase):
@@ -44,3 +45,10 @@ class gentestTests(unittest.TestCase):
         self.assertEqual(gentest.render('test-kdump', self.target,
                          self.context), None)
         self.assertTrue(os.path.exists(self.target))
+
+    def test_render_bad_template(self):
+
+        self.target = os.path.join(self.workdir, 'test-kdump')
+        with self.assertRaises(exceptions.TemplateNotFound) as cont:
+            gentest.render('bad-template', self.target, self.context)
+        self.assertEqual(cont.exception.message, 'bad-template')
