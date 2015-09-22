@@ -19,7 +19,7 @@ package_upgrade: true
 
 hostname: test-kdump
 manage_etc_hosts: true
-{% if use_proxy -%}
+{% if use_proxy %}
 apt_proxy: http://192.168.0.13:8000
 {% endif %}
 
