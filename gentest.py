@@ -42,7 +42,8 @@ def render(source, target, context, templates_dir=None, encoding='UTF-8'):
 
     if templates_dir is None:
         templates_dir = os.path.join('.', 'templates')
-    loader = Environment(loader=FileSystemLoader(templates_dir))
+    loader = Environment(loader=FileSystemLoader(templates_dir),
+                         lstrip_blocks=True, trim_blocks=True)
     try:
         source = source
         template = loader.get_template(source)
