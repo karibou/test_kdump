@@ -87,3 +87,18 @@ class gentestTests(unittest.TestCase):
             self.option = self.context_tests[self.test][1]
             self.assertTrue(self._is_in_file(self.target, self.option),
                             'Option "{}" not found'.format(self.option))
+
+    def test_render_distrib(self):
+
+        self.distrib_tests = {'debian': 'REMOTE_USER=root',
+                              'ubuntu': 'crashkernel=384M-2G:64M'}
+        self.context['force'] = True
+        self.target = os.path.join(self.workdir, 'test-kdump')
+        for self.test in self.distrib_tests.keys():
+            self.context['distrib'].pop()
+            self.context['distrib'].append(self.test)
+            self.assertEqual(gentest.render('test-kdump', self.target,
+                             self.context), None)
+            self.option = self.distrib_tests[self.test]
+            self.assertTrue(self._is_in_file(self.target, self.option),
+                            'Option "{}" not found'.format(self.option))
