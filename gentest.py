@@ -94,6 +94,8 @@ def parse_arguments(args):
     parser.add_argument('-D', '--distrib', nargs=1, default=['ubuntu'],
                         choices=['ubuntu', 'debian'],
                         help='Distribution specific config (default: ubuntu)')
+    parser.add_argument('-n', '--networked', action='store_true',
+                        help='Enable remote kernel dumps (default: local only')
     args = vars(parser.parse_args())
     return(args)
 
