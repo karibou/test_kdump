@@ -11,7 +11,8 @@ class gentestTests(unittest.TestCase):
         gentest.PWD = letest.workdir
         letest.context = {'do_upgrade': False, 'force': False,
                           'use_proxy': False, 'do_update': False,
-                          'output_file': ['test-kdump']}
+                          'output_file': ['test-kdump'], 'distrib': ['ubuntu'],
+                          'network': False, 'result': False}
 
     @classmethod
     def tearDownClass(letest):
