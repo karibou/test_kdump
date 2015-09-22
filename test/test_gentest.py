@@ -53,3 +53,20 @@ class gentestTests(unittest.TestCase):
         with self.assertRaises(exceptions.TemplateNotFound) as cont:
             gentest.render('bad-template', self.target, self.context)
         self.assertEqual(cont.exception.message, 'bad-template')
+
+    def test_render_default_boolean_options(self):
+
+        self.context_tests = {'do_upgrade': [False, 'package_upgrade: true'],
+                              'use_proxy': [False, 'apt_proxy'],
+                              'do_update': [False, 'package_update: true'],
+                              'networked': [True, 'LOCAL_ONLY=1'],
+                              'results': [True, 'NO_RESULT=1']}
+        self.context['force'] = True
+        self.target = os.path.join(self.workdir, 'test-kdump')
+        for self.test in self.context_tests.keys():
+            self.context[self.test] = self.context_tests[self.test][0]
+            self.assertEqual(gentest.render('test-kdump', self.target,
+                             self.context), None)
+            self.option = self.context_tests[self.test][1]
+            self.assertFalse(self._is_in_file(self.target, self.option),
+                             'Option "{}" not found'.format(self.option))
