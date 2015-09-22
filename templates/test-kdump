@@ -48,18 +48,21 @@ packages:
  - crash
 
 runcmd:
-# Debian specific commands. Remove comments as needed
+{% if distrib[0] == 'debian' %}
+# Debian specific commands.
 # Needed to avoid kexec reboot on Debian
-# - touch /tmp/no-kexec-reboot
-# - [ sed, -i, 's/115200/115200 crashkernel=128M/', /etc/default/grub ]
-
-# Ubuntu specific commands. Remove comments as needed
-# - [ sed, -i, 's/crashkernel=384M-2G:64M/crashkernel=384M-2G:128M/', /etc/grub.d/10_linux ]
-
+ - touch /tmp/no-kexec-reboot
+ - [ sed, -i, 's/115200/115200 crashkernel=128M/', /etc/default/grub ]
+{% elif distrib[0] == 'ubuntu' %}
+# Ubuntu specific commands.
+ - [ sed, -i, 's/crashkernel=384M-2G:64M/crashkernel=384M-2G:128M/', /etc/grub.d/10_linux ]
+{% endif %}
 # Test specific toggles
 # - echo "LOCAL_ONLY=1" > /etc/default/kdump-test-script
 # - echo "NO_RESULT=1" >> /etc/default/kdump-test-script
-# - echo "REMOTE_USER=root" >> /etc/default/kdump-test-script
+{% if distrib[0] == 'debian' %}
+ - echo "REMOTE_USER=root" >> /etc/default/kdump-test-script
+{% endif %}
 #
  - echo "StrictHostKeyChecking no" > /root/.ssh/config
  - ln -s /etc/init.d/kdump-test-script.py /etc/rc2.d/S99kdump-test-script.py

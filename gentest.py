@@ -91,6 +91,9 @@ def parse_arguments(args):
                         help='Enable local proxy')
     parser.add_argument('-o', '--output-file', nargs=1, default=['test-kdump'],
                         help='Output filename (default: test-kdump')
+    parser.add_argument('-D', '--distrib', nargs=1, default=['ubuntu'],
+                        choices=['ubuntu', 'debian'],
+                        help='Distribution specific config (default: ubuntu)')
     args = vars(parser.parse_args())
     return(args)
 
