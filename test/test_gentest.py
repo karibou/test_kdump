@@ -6,16 +6,16 @@ from jinja2 import exceptions
 
 class gentestTests(unittest.TestCase):
     @classmethod
-    def setUpClass(letest):
+    def setUp(letest):
         letest.workdir = tempfile.mkdtemp()
         gentest.PWD = letest.workdir
         letest.context = {'do_upgrade': False, 'force': False,
                           'use_proxy': False, 'do_update': False,
                           'output_file': ['test-kdump'], 'distrib': ['ubuntu'],
-                          'network': False, 'result': False}
+                          'networked': False, 'result': False}
 
     @classmethod
-    def tearDownClass(letest):
+    def tearDown(letest):
         shutil.rmtree(letest.workdir)
 
     def test_render_exists(self):
