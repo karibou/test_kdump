@@ -62,9 +62,6 @@ runcmd:
 # - echo "REMOTE_USER=root" >> /etc/default/kdump-test-script
 #
  - echo "StrictHostKeyChecking no" > /root/.ssh/config
- - wget -T30 http://people.canonical.com/~lbouchard/kdump-tools-tests/kdump-test-script.py
- - chmod 750 kdump-test-script.py
- - mv kdump-test-script.py /etc/init.d
  - ln -s /etc/init.d/kdump-test-script.py /etc/rc2.d/S99kdump-test-script.py
 
 power_state:
