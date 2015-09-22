@@ -102,3 +102,11 @@ class gentestTests(unittest.TestCase):
             self.option = self.distrib_tests[self.test]
             self.assertTrue(self._is_in_file(self.target, self.option),
                             'Option "{}" not found'.format(self.option))
+
+    def _is_in_file(self, outfile, text):
+        with open(outfile, 'r') as script:
+            lines = str(script.readlines())
+            if lines.find(text) == -1:
+                return(False)
+            else:
+                return(True)
