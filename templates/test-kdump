@@ -1,10 +1,10 @@
 #cloud-config
+{% if do_update %}
 # Update apt database on first boot
 # (ie run apt-get update)
 #
 # Default: true
 # Aliases: apt_update
-{% if do_update -%}
 package_update: true
 {% endif %}
 
