@@ -1,4 +1,4 @@
-##cloud-config
+#cloud-config
 # Update apt database on first boot
 # (ie run apt-get update)
 #
