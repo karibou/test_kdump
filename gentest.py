@@ -57,6 +57,28 @@ def render(source, target, context, templates_dir=None, encoding='UTF-8'):
 
 
 def parse_arguments(args):
+    """
+    Valid arguments are :
+
+    --force | -f       : Force overwriting of an existing script
+
+    --do-update | -d   : Do apt-get update when starting instance
+
+    --do-upgrade | -g  : Do apt-get upgrade when starting instance
+
+    --use-proxy | -p   : Use a local proxy
+
+    --output-file | -o : Override the default output file (test-kdump)
+
+    --distrib | -D     : Override the default distribution to be generated
+                         (ubuntu)
+
+    --network | -n     : Do networked kernel dump capture tests.
+                         (default: local test only)
+
+    --result | -r      : Verify resulting crash dumps (much longer)
+                         (default: do not verify results)
+    """
     parser = argparse.ArgumentParser(
         description='Generate the kdump-test cloud-init script')
     parser.add_argument('-f', '--force', action='store_true',
