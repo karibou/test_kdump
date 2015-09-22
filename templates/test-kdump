@@ -7,16 +7,14 @@
 # Aliases: apt_update
 package_update: true
 {% endif %}
-
+{% if do_upgrade %}
 # Upgrade the instance on first boot
 # (ie run apt-get upgrade)
 #
 # Default: false
 # Aliases: apt_upgrade
-{% if do_upgrade -%}
 package_upgrade: true
 {% endif %}
-
 hostname: test-kdump
 manage_etc_hosts: true
 {% if use_proxy %}
