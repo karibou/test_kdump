@@ -58,9 +58,11 @@ runcmd:
  - [ sed, -i, 's/crashkernel=384M-2G:64M/crashkernel=384M-2G:128M/', /etc/grub.d/10_linux ]
 {% endif %}
 # Test specific toggles
-# - echo "NO_RESULT=1" >> /etc/default/kdump-test-script
 {% if networked == false %}
  - echo "LOCAL_ONLY=1" > /etc/default/kdump-test-script
+{% endif %}
+{% if results == false %}
+ - echo "NO_RESULT=1" >> /etc/default/kdump-test-script
 {% endif %}
 {% if distrib[0] == 'debian' %}
  - echo "REMOTE_USER=root" >> /etc/default/kdump-test-script
