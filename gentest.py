@@ -1,12 +1,6 @@
 #!/usr/bin/python3
 # Copyright 2014-2015 Canonical Limited.
 #
-# This file is shamelesly ripped out of charm-helpers templating.py.
-#
-# charm-helpers is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License version 3 as
-# published by the Free Software Foundation.
-#
 # You should have received a copy of the GNU Lesser General Public License
 # along with charm-helpers.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -15,6 +9,7 @@ import sys
 import argparse
 
 
+# This function is shamelesly ripped out of charm-helpers templating.py.
 def render(source, target, context, templates_dir=None, encoding='UTF-8'):
     """
     Render a template.
