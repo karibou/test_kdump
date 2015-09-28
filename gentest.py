@@ -51,6 +51,20 @@ def render(source, target, context, templates_dir=None, encoding='UTF-8'):
         file.write(content.encode(encoding))
 
 
+def validate_ppa(url):
+
+    if url == None:
+        raise ValueError
+
+    if url[0][:3] != 'ppa':
+        print("Invalid PPA format (missing ppa: prefix) : %s" % url[0])
+        return(1)
+
+    if url[0].find('/') == -1:
+        print("Invalid PPA format (missing /{ppa} name) : %s" % url[0])
+        return(1)
+    return(0)
+
 def parse_arguments(args):
     """
     Valid arguments are :
@@ -62,6 +76,8 @@ def parse_arguments(args):
     --do-upgrade | -g  : Do apt-get upgrade when starting instance
 
     --use-proxy | -p   : Use a local proxy
+
+    --ppa | -P         : Use the provided PPA as an archive source
 
     --output-file | -o : Override the default output file (test-kdump)
 
@@ -84,6 +100,8 @@ def parse_arguments(args):
                         help='force apt-get upgrade')
     parser.add_argument('-p', '--use-proxy', action='store_true',
                         help='Enable local proxy')
+    parser.add_argument('-P', '--ppa', nargs=1,
+                        help='Provide a PPA to be used for the test')
     parser.add_argument('-o', '--output-file', nargs=1, default=['test-kdump'],
                         help='Output filename (default: test-kdump')
     parser.add_argument('-D', '--distrib', nargs=1, default=['ubuntu'],
@@ -94,11 +112,17 @@ def parse_arguments(args):
     parser.add_argument('-r', '--results', action='store_true',
                         help='Verify resulting kernel dumps (much longer)')
     args = vars(parser.parse_args())
-    return(args)
+
+    if args['ppa'] is not None:
+        if validate_ppa(args['ppa']):
+            return(1)
+        else:
+            return(args)
 
 
 if __name__ == '__main__':
     context = parse_arguments(sys.argv[1:])
 
-    target = os.path.join(os.getenv('PWD'), context['output_file'][0])
-    render('test-kdump', target, context)
+    if isinstance(context, dict):
+        target = os.path.join(os.getenv('PWD'), context['output_file'][0])
+        render('test-kdump', target, context)

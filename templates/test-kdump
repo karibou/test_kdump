@@ -25,7 +25,7 @@ ssh_import_id: [louis-bouchard]
 
 {% if ppa %}
 apt_sources:
-  - source: "ppa:louis-bouchard/networked-kdump"
+  - source: "{{ ppa[0] }}"
 {% endif %}
 
 write_files:
