@@ -12,7 +12,7 @@ class gentestTests(unittest.TestCase):
         letest.context = {'do_upgrade': False, 'force': False,
                           'use_proxy': False, 'do_update': False,
                           'output_file': ['test-kdump'], 'distrib': ['ubuntu'],
-                          'networked': False, 'result': False}
+                          'networked': False, 'results': False, 'ppa': []}
 
     @classmethod
     def tearDown(letest):
