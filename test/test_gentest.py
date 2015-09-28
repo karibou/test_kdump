@@ -103,6 +103,26 @@ class gentestTests(unittest.TestCase):
             self.assertTrue(self._is_in_file(self.target, self.option),
                             'Option "{}" not found'.format(self.option))
 
+    def test_validate_url_no_ppa(self):
+        with mock.patch('sys.argv', ['gentest', '-P', 'username/my-ppa']):
+            self.assertEquals(gentest.parse_arguments(sys.argv[1:]), 1)
+            output = sys.stdout.getvalue().strip()
+            self.assertEqual(output, "Invalid PPA format (missing ppa: prefix)"
+                             " : username/my-ppa")
+
+    def test_validate_url_no_name(self):
+        with mock.patch('sys.argv', ['gentest', '-P', 'ppa:username']):
+            self.assertEquals(gentest.parse_arguments(sys.argv[1:]), 1)
+            output = sys.stdout.getvalue().strip()
+            self.assertEqual(output, "Invalid PPA format (missing /{ppa}"
+                             " name) : ppa:username")
+
+    def test_validate_url_ok(self):
+        with mock.patch('sys.argv', ['gentest', '-P', 'ppa:username/my-ppa']):
+            self.context['ppa'].append('ppa:username/my-ppa')
+            self.assertEquals(gentest.parse_arguments(sys.argv[1:]),
+                              self.context)
+
     def _is_in_file(self, outfile, text):
         with open(outfile, 'r') as script:
             lines = str(script.readlines())
